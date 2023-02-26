@@ -59,6 +59,8 @@
 </template>
 
 <script>
+import servicesModal from './servicesModal.vue'
+
 export default {
   data() {
     return {
@@ -95,7 +97,7 @@ export default {
     editService(id) {
       // Find the service with the given id
       this.selectedService = this.recentServices.find((s) => s._id === id)
-      this.showModal = true;
+      this.showModal = true
       // Show the modal
       // You could use a boolean data property to control the modal visibility
       // For example, you could add a `showModal` property to your data object:
