@@ -66,8 +66,3 @@ export default {
   }
 }
 </script>
-<template>
-  <div class="shadow-lg rounded-lg overflow-hidden">
-    <canvas ref="attendance_Chart"></canvas>
-  </div>
-</template>
