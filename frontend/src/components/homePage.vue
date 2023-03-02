@@ -141,13 +141,14 @@ export default {
     </div>
     <div class="chart">
       <PieChart />
+      <br />
     </div>
   </main>
 </template>
 
 <style>
 .chart {
-  width: 50%;
-  height: 50%;
+  width: 40%;
+  height: 40%;
 }
 </style>

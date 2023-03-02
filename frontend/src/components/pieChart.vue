@@ -1,3 +1,9 @@
+<template>
+  <div class="shadow-lg rounded-lg overflow-hidden">
+    <canvas ref="attendance_Chart"></canvas>
+  </div>
+</template>
+
 <script>
 import { Chart, registerables } from 'chart.js'
 Chart.register(...registerables)
