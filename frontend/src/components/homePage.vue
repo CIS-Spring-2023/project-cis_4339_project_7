@@ -136,19 +136,12 @@ export default {
             </div>
             <!-- End of error alert -->
           </div>
+          <div>
+            <br />
+            <PieChart />
+          </div>
         </div>
       </div>
     </div>
-    <div class="chart">
-      <PieChart />
-      <br />
-    </div>
   </main>
 </template>
-
-<style>
-.chart {
-  width: 40%;
-  height: 40%;
-}
-</style>
