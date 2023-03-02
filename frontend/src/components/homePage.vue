@@ -1,18 +1,22 @@
 <script>
 import { DateTime } from 'luxon'
 import axios from 'axios'
+import PieChart from '@/components/pie_graphChart.vue'
+import Attendance_Chart from './pieChart.vue'
 import AttendanceChart from './barChart.vue'
 const apiURL = import.meta.env.VITE_ROOT_API
 
 export default {
   components: {
-    AttendanceChart
+    AttendanceChart,
+    PieChart
   },
   data() {
     return {
       recentEvents: [],
       labels: [],
       chartData: [],
+      enrolled: [],
       loading: false,
       error: null
     }
@@ -135,5 +139,15 @@ export default {
         </div>
       </div>
     </div>
+    <div class="chart">
+      <PieChart />
+    </div>
   </main>
 </template>
+
+<style>
+.chart {
+  width: 50%;
+  height: 50%;
+}
+</style>
