@@ -1,16 +1,18 @@
 export const pieChartData = {
   type: 'pie',
+  // Define the labels for each data point
   data: {
     labels: [
-      'Company A',
-      'Company B',
-      'Company C',
-      'Company D',
-      'Company E',
-      'Company F',
-      'Company G',
-      'Company H'
+      '77001',
+      '77002',
+      '77003',
+      '77043',
+      '77051',
+      '77403',
+      '77031',
+      '90201'
     ],
+    // Define the datasets used to render the data point
     datasets: [
       {
         label: 'Zip-Code',
@@ -25,11 +27,12 @@ export const pieChartData = {
           'rgba(255, 165, 0, 0.5)', // Orange
           'rgba(128, 0, 128, 0.5)' // Purple
         ],
-        borderColor: '#36495d',
+        borderColor: '#17202A',
         borderWidth: 3
       }
     ]
   },
+  // Define the options for the char
   options: {
     responsive: true,
     lineTension: 1

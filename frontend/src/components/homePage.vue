@@ -2,7 +2,6 @@
 import { DateTime } from 'luxon'
 import axios from 'axios'
 import PieChart from '@/components/pie_graphChart.vue'
-import Attendance_Chart from './pieChart.vue'
 import AttendanceChart from './barChart.vue'
 const apiURL = import.meta.env.VITE_ROOT_API
 

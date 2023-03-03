@@ -8,6 +8,7 @@
 import { Chart, registerables } from 'chart.js'
 Chart.register(...registerables)
 
+// Define the component
 export default {
   props: {
     label: {
@@ -22,6 +23,8 @@ export default {
     const borderColor = backgroundColor.map((e) =>
       e.replace(/[\d\.]+\)$/g, '1)')
     )
+    // Create a new chart instance using the canvas element and data
+
     await new Chart(this.$refs.attendance_Chart, {
       type: 'pie',
       data: {
@@ -36,18 +39,6 @@ export default {
         ]
       },
       options: {
-        scales: {
-          y: {
-            ticks: {
-              stepSize: 1
-            }
-          },
-          x: {
-            gridLines: {
-              display: false
-            }
-          }
-        },
         plugins: {
           legend: {
             display: false
@@ -58,6 +49,8 @@ export default {
       }
     })
   },
+  // Define the getColor method used to generate random RGBA colors
+
   methods: {
     getColor() {
       let channel = () => Math.random() * 255
