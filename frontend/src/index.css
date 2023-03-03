@@ -6,7 +6,7 @@ button {
   padding: 10px;
 }
 
-main {
+.login-background {
   display: flex;
   justify-content: center;
   align-items: center;

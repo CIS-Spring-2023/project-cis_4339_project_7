@@ -14,7 +14,7 @@ export default {
 </script>
 
 <template>
-<main class=login-main>
+<main class="login-background">
 <div class="login">
   <div class="login-header">
     <center><p><b>Login</b></p></center><br>
