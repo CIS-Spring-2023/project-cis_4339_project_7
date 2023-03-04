@@ -20,41 +20,16 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-300">
-            <tr
-              @click="editService(service._id)"
-              v-for="service in recentServices"
-              :key="service._id"
-            >
+            <tr v-for="service in recentServices" :key="service._id" @click="toggleServiceModal(service)">
               <td class="p-2 text-left">{{ service.name }}</td>
               <td class="p-2 text-left">{{ service.status }}</td>
               <td class="p-2 text-left">{{ service.description }}</td>
             </tr>
           </tbody>
         </table>
-        <div>
-          <!-- Start of loading animation -->
-          <div class="mt-40" v-if="loading">
-            <p
-              class="text-6xl font-bold text-center text-gray-500 animate-pulse"
-            >
-              Loading...
-            </p>
-          </div>
-          <!-- End of loading animation -->
-
-          <!-- Start of error alert -->
-          <div class="mt-12 bg-red-50" v-if="error">
-            <h3 class="px-4 py-1 text-4xl font-bold text-white bg-red-800">
-              {{ error.title }}
-            </h3>
-            <p class="p-4 text-lg font-bold text-red-900">
-              {{ error.message }}
-            </p>
-          </div>
-          <!-- End of error alert -->
-        </div>
       </div>
     </div>
+    <servicesModal v-if="showModal" theme="sale" @close="toggleServiceModal" :service="selectedService" />
   </div>
 </template>
 
@@ -62,6 +37,7 @@
 import servicesModal from './servicesModal.vue'
 
 export default {
+  components: { servicesModal },
   data() {
     return {
       recentServices: [
@@ -85,27 +61,36 @@ export default {
           status: 'active',
           description:
             'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'
+        },
+        {
+          _id: 4,
+          name: 'Service 4',
+          status: 'inactive',
+          description:
+            'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.'
+        },
+        {
+          _id: 5,
+          name: 'Service 5',
+          status: 'active',
+          description:
+            'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
         }
       ],
-      selectedService: null,
-      loading: false,
-      error: null,
-      showModal: false
+      showModal: false,
+      selectedService: null
     }
   },
   methods: {
-    editService(id) {
-      // Find the service with the given id
-      this.selectedService = this.recentServices.find((s) => s._id === id)
-      this.showModal = true
-      // Show the modal
-      // You could use a boolean data property to control the modal visibility
-      // For example, you could add a `showModal` property to your data object:
-      // showModal: false
-      // And then set it to true here: this.showModal = true;
+    toggleServiceModal(service) {
+      this.selectedService = service
+      this.showModal = !this.showModal
+      console.log('toggleServiceModal')
     }
   }
 }
 </script>
+
+
 
 <style lang="scss" scoped></style>

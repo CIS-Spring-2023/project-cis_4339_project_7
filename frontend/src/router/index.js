@@ -44,11 +44,6 @@ const routes = [
     path: '/manageservices',
     name: 'manageservices',
     component: () => import('../components/manageServices.vue')
-  },
-  {
-    path: '/servicesmodal',
-    name: 'servicesmodal',
-    component: () => import('../components/servicesModal.vue')
   }
 ]
 const router = createRouter({
