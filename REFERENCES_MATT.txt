@@ -1,8 +1,8 @@
 REFERENCES:
 
-front-end:
+Front-End:
 
-gradient:
+Gradient:
 https://uigradients.com/#CrystalClear
 
 User/Roles:
@@ -10,4 +10,9 @@ https://stackoverflow.com/questions/57249074/how-to-create-login-for-multiple-ro
 https://medium.com/@manojkumar_88220/role-based-authentication-using-vue-js-2-f54e18498019
 Thursday's Class that discussed using pinia. Downloaded the class document and used it for the majority of the login information to get it to work properly.
 
+Extra Video:
 https://www.youtube.com/watch?v=iDn60cHJeqY
+
+Login Information:
+Username: editor
+Password: editor

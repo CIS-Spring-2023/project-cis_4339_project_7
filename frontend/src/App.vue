@@ -31,12 +31,17 @@ export default {
         </section>
         <nav class="mt-10">
           <ul class="flex flex-col gap-4">
-            <li>
+            <li v-if="!user.isLoggedIn">
               <router-link to="/login">
                 <button class="dash-login">Login</button>
               </router-link>
             </li>
-            <br />
+            <li v-if="user.isLoggedIn">
+              <a href="">
+                <span @click="store.logout()"><button class="dash-login">Logout</button></span>
+              </a>
+            </li>
+            <br>
             <li>
               <router-link to="/">
                 <span
@@ -47,7 +52,7 @@ export default {
                 Dashboard
               </router-link>
             </li>
-            <li>
+            <li v-if="user.isLoggedIn">
               <router-link to="/intakeform">
                 <span
                   style="position: relative; top: 6px"
@@ -57,7 +62,7 @@ export default {
                 Client Intake Form
               </router-link>
             </li>
-            <li>
+            <li v-if="user.isLoggedIn">
               <router-link to="/eventform">
                 <span
                   style="position: relative; top: 6px"
