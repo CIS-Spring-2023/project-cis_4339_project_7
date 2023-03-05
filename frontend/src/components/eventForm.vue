@@ -5,15 +5,22 @@ import axios from 'axios'
 const apiURL = import.meta.env.VITE_ROOT_API
 
 export default {
+  props: {
+  recentServices: {
+    type: Array,
+    required: true
+  }
+},
   setup() {
     return { v$: useVuelidate({ $autoDirty: true }) }
   },
+  
   data() {
     return {
       // removed unnecessary extra array to track services
       event: {
         name: '',
-        services: [],
+        recentServices: [],
         date: '',
         address: {
           line1: '',
@@ -44,6 +51,13 @@ export default {
       }
     }
   },
+  created() {
+  console.log(this.recentServices);
+},
+mounted() {
+  console.log(this.recentServices);
+}
+,
   // sets validations for the various data properties
   validations() {
     return {
@@ -136,58 +150,24 @@ export default {
           <!-- form field -->
           <div class="flex flex-col grid-cols-3">
             <label>Services Offered at Event</label>
-            <div>
-              <label for="familySupport" class="inline-flex items-center">
-                <input
-                  type="checkbox"
-                  id="familySupport"
-                  value="Family Support"
-                  v-model="event.services"
-                  class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
-                  notchecked
-                />
-                <span class="ml-2">Family Support</span>
-              </label>
-            </div>
-            <div>
-              <label for="adultEducation" class="inline-flex items-center">
-                <input
-                  type="checkbox"
-                  id="adultEducation"
-                  value="Adult Education"
-                  v-model="event.services"
-                  class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
-                  notchecked
-                />
-                <span class="ml-2">Adult Education</span>
-              </label>
-            </div>
-            <div>
-              <label for="youthServices" class="inline-flex items-center">
-                <input
-                  type="checkbox"
-                  id="youthServices"
-                  value="Youth Services Program"
-                  v-model="event.services"
-                  class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
-                  notchecked
-                />
-                <span class="ml-2">Youth Services Program</span>
-              </label>
-            </div>
-            <div>
-              <label for="childhoodEducation" class="inline-flex items-center">
-                <input
-                  type="checkbox"
-                  id="childhoodEducation"
-                  value="Early Childhood Education"
-                  v-model="event.services"
-                  class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
-                  notchecked
-                />
-                <span class="ml-2">Early Childhood Education</span>
-              </label>
-            </div>
+              <div class="flex flex-col col-span-2">
+                <table class="min-w-full shadow-md rounded">
+                  <thead class="bg-gray-50 text-xl">
+                    <tr class="p-4 text-left">
+                      <th class="p-4 text-left">Service Name</th>
+                      <th class="p-4 text-left">Status</th>
+                      <th class="p-4 text-left">Description</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-300">
+                    <tr v-for="service in recentServices" :key="service._id">
+                      <td class="p-2 text-left">{{ service.name }}</td>
+                      <td class="p-2 text-left">{{ service.status }}</td>
+                      <td class="p-2 text-left">{{ service.description }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
           </div>
         </div>
 

@@ -7,8 +7,15 @@
               <input type="text" id="name" v-model="service.name" class="block w-full p-3 mb-4 border border-gray-300 rounded-md">
               <label for="description" class="block mb-2 p-3">Description</label>
               <textarea id="description" v-model="service.description" class="block w-full p-3 resize-none h-40 overflow-y-scroll border border-gray-300 rounded-md mb-4"></textarea>
-              <label for="status" class="block mb-2 p-3">Status</label>
-              <input type="" id="status" v-model="service.status" class="block w-full p-3 mb-4 border border-gray-300 rounded-md">
+              <label class="block mb-2 p-3">Status</label>
+              <div class="flex items-center mb-4">
+                <input type="radio" id="active" value="active" v-model="service.status" class="mr-2">
+                <label for="active">Active</label>
+              </div>
+              <div class="flex items-center">
+                <input type="radio" id="inactive" value="inactive" v-model="service.status" class="mr-2">
+                <label for="inactive">Inactive</label>
+              </div>
           </form>
           <button class="bg-red-700 text-white rounded" @click="closeModal">Close</button>
           <button class="bg-red-700 text-white rounded float-right" @click="closeModal">Save</button>

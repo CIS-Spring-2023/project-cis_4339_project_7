@@ -20,7 +20,7 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-300">
-            <tr v-for="service in recentServices" :key="service._id" @click="toggleServiceModal(service)">
+            <tr v-for="service in recentServices" :key="service._id" @click="editServiceModal(service)">
               <td class="p-2 text-left">{{ service.name }}</td>
               <td class="p-2 text-left">{{ service.status }}</td>
               <td class="p-2 text-left">{{ service.description }}</td>
@@ -29,15 +29,20 @@
         </table>
       </div>
     </div>
-    <servicesModal v-if="showModal" theme="sale" @close="toggleServiceModal" :service="selectedService" />
+    <button class="bg-red-700 text-white font-bold py-2 px-4 rounded-full mt-10 ml-10" @click="toggleAddServiceModal">Add Service</button>
+    <editServicesModal v-if="showModal" theme="sale" @close="editServiceModal" :service="selectedService" />
+    <addServiceModal v-if="showAddServiceModal" @close="showAddServiceModal = false" v-on:addService="addNewService" />
   </div>
 </template>
 
 <script>
-import servicesModal from './servicesModal.vue'
+import editServicesModal from './editServicesModal.vue'
+import addServiceModal from './addServicesModal.vue'
+import eventForm from './eventForm.vue'
+
 
 export default {
-  components: { servicesModal },
+  components: { editServicesModal, addServiceModal, eventForm},
   data() {
     return {
       recentServices: [
@@ -46,46 +51,86 @@ export default {
           name: 'Service 1',
           status: 'active',
           description:
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+            'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
         },
         {
           _id: 2,
           name: 'Service 2',
           status: 'inactive',
           description:
-            'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+            'Sed do eiusmod tempor incididunt ut labore'
         },
         {
           _id: 3,
           name: 'Service 3',
           status: 'active',
           description:
-            'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'
+            'Ut enim ad minim veniam, quis nostrud'
         },
         {
           _id: 4,
           name: 'Service 4',
           status: 'inactive',
           description:
-            'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.'
+            'Duis aute irure dolor in reprehenderit in'
         },
         {
           _id: 5,
           name: 'Service 5',
           status: 'active',
           description:
-            'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
+            'Excepteur sint occaecat cupidatat non proident'
         }
       ],
       showModal: false,
-      selectedService: null
+      selectedService: null,
+      showAddServiceModal: false,
+      newService: {
+        name: '',
+        status: '',
+        description: ''
+      }
+      
     }
   },
+  created() {
+  console.log(this.recentServices);
+}
+,
   methods: {
-    toggleServiceModal(service) {
+    editServiceModal(service) {
       this.selectedService = service
       this.showModal = !this.showModal
-      console.log('toggleServiceModal')
+      if (this.showModal) {
+        console.log('editServiceModal')
+      }
+      if (!this.showModal) {
+        console.log('save editServiceModal')
+      }
+    },
+    toggleAddServiceModal() {
+      this.showAddServiceModal = !this.showAddServiceModal
+      if (this.showAddServiceModal) {
+        console.log('toggleAddServiceModal')
+      }
+    },
+    addService() {
+      console.log('Adding service:', this.newService)
+      this.recentServices.push({
+        _id: this.recentServices.length + 1,
+        name: this.newService.name,
+        status: this.newService.status,
+        description: this.newService.description
+      })
+      this.showAddServiceModal = false
+      this.newService = {
+        name: '',
+        status: '',
+        description: ''
+      }
+    },
+    addNewService(service) {
+      this.recentServices.push(service)
     }
   }
 }
