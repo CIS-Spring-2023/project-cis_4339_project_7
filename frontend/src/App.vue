@@ -1,6 +1,7 @@
 <script>
 import axios from "axios";
 const apiURL = import.meta.env.VITE_ROOT_API;
+import { useLoggedInUserStore } from "@/store/loggedInUser";
 
 export default {
   name: "App",
@@ -14,8 +15,13 @@ export default {
       this.orgName = res.data.name;
     });
   },
+  setup() {
+    const user = useLoggedInUserStore();
+    return { user };
+  },
 };
 </script>
+
 <template>
   <main class="flex flex-row">
     <div id="_container" class="h-screen">
@@ -30,7 +36,7 @@ export default {
                 <button class="dash-login">Login</button>
               </router-link>
             </li>
-            <br>
+            <br />
             <li>
               <router-link to="/">
                 <span
