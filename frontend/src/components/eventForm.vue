@@ -3,24 +3,20 @@ import useVuelidate from '@vuelidate/core'
 import { required } from '@vuelidate/validators'
 import axios from 'axios'
 const apiURL = import.meta.env.VITE_ROOT_API
+import { useMyStore } from '@/store/store.js'
 
 export default {
-  props: {
-  recentServices: {
-    type: Array,
-    required: true
-  }
-},
   setup() {
-    return { v$: useVuelidate({ $autoDirty: true }) }
+    const myStore = useMyStore()
+    const activeServices = myStore.recentServices.filter(service => service.status === 'active')
+        
+    return { v$: useVuelidate({ $autoDirty: true }), myStore, activeServices }
   },
-  
   data() {
     return {
-      // removed unnecessary extra array to track services
       event: {
         name: '',
-        recentServices: [],
+        services: [],
         date: '',
         address: {
           line1: '',
@@ -30,15 +26,20 @@ export default {
           zip: ''
         },
         description: ''
-      }
+      },
+      recentServices: [] // add recentServices to data property
+    }
+  },
+  computed: {
+    services() {
+      return this.myStore.services
     }
   },
   methods: {
     async handleSubmitForm() {
-      // Checks to see if there are any errors in validation
       const isFormCorrect = await this.v$.$validate()
-      // If no errors found. isFormCorrect = True then the form is submitted
       if (isFormCorrect) {
+        this.event.services = this.services.concat(this.recentServices)
         axios
           .post(`${apiURL}/events`, this.event)
           .then(() => {
@@ -51,14 +52,6 @@ export default {
       }
     }
   },
-  created() {
-  console.log(this.recentServices);
-},
-mounted() {
-  console.log(this.recentServices);
-}
-,
-  // sets validations for the various data properties
   validations() {
     return {
       event: {
@@ -69,6 +62,7 @@ mounted() {
   }
 }
 </script>
+
 <template>
   <main>
     <div>
@@ -150,24 +144,30 @@ mounted() {
           <!-- form field -->
           <div class="flex flex-col grid-cols-3">
             <label>Services Offered at Event</label>
-              <div class="flex flex-col col-span-2">
-                <table class="min-w-full shadow-md rounded">
-                  <thead class="bg-gray-50 text-xl">
-                    <tr class="p-4 text-left">
-                      <th class="p-4 text-left">Service Name</th>
-                      <th class="p-4 text-left">Status</th>
-                      <th class="p-4 text-left">Description</th>
-                    </tr>
-                  </thead>
-                  <tbody class="divide-y divide-gray-300">
-                    <tr v-for="service in recentServices" :key="service._id">
-                      <td class="p-2 text-left">{{ service.name }}</td>
-                      <td class="p-2 text-left">{{ service.status }}</td>
-                      <td class="p-2 text-left">{{ service.description }}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+            <div class="table-container">
+  <table class="services-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Status</th>
+        <th>Description</th>
+        <th>Include in Event</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="service in activeServices" :key="service._id">
+        <td>{{ service._id }}</td>
+        <td>{{ service.name }}</td>
+        <td>{{ service.status }}</td>
+        <td>{{ service.description }}</td>
+        <td>
+          <input type="checkbox" class="action-checkbox" v-model="service.includeInEvent">
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
           </div>
         </div>
 
@@ -248,3 +248,34 @@ mounted() {
     </div>
   </main>
 </template>
+
+<style>
+.services-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.services-table th, .services-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.services-table th {
+  background-color: #f2f2f2;
+}
+
+.services-table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.action-checkbox {
+  margin-right: 5px;
+}
+
+.table-container {
+  width: 800px;
+  margin: 0 auto;
+}
+</style>

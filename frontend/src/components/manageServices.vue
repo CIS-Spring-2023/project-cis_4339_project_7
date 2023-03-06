@@ -1,141 +1,210 @@
 <template>
   <div>
-    <h1
-      class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10"
-    >
-      Manage Services
-    </h1>
-    <br />
-    <div
-      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
-    >
-      <div class="ml-10"></div>
-      <div class="flex flex-col col-span-2">
-        <table class="min-w-full shadow-md rounded">
-          <thead class="bg-gray-50 text-xl">
-            <tr class="p-4 text-left">
-              <th class="p-4 text-left">Service Name</th>
-              <th class="p-4 text-left">Status</th>
-              <th class="p-4 text-left">Description</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-300">
-            <tr v-for="service in recentServices" :key="service._id" @click="editServiceModal(service)">
-              <td class="p-2 text-left">{{ service.name }}</td>
-              <td class="p-2 text-left">{{ service.status }}</td>
-              <td class="p-2 text-left">{{ service.description }}</td>
-            </tr>
-          </tbody>
-        </table>
+    <h2 class="page-header">Add/Edit Service</h2>
+    <form>
+      <div>
+        <label for="name">Name:</label>
+        <input id="name" type="text" v-model="serviceName" required>
       </div>
-    </div>
-    <button class="bg-red-700 text-white font-bold py-2 px-4 rounded-full mt-10 ml-10" @click="toggleAddServiceModal">Add Service</button>
-    <editServicesModal v-if="showModal" theme="sale" @close="editServiceModal" :service="selectedService" />
-    <addServiceModal v-if="showAddServiceModal" @close="showAddServiceModal = false" v-on:addService="addNewService" />
+      <div>
+        <label for="status">Status:</label>
+        <select id="status" v-model="serviceStatus" required>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+      </div>
+      <div>
+        <label for="description">Description:</label>
+        <textarea id="description" v-model="serviceDescription" required></textarea>
+      </div>
+      <button type="button" @click="addOrUpdateService">
+        {{ editingService ? 'Update Service' : 'Add Service' }}
+      </button>
+    </form>
+    <table class="services-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Status</th>
+          <th>Description</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="service in recentServices" :key="service._id">
+          <td>{{ service._id }}</td>
+          <td>{{ service.name }}</td>
+          <td>{{ service.status }}</td>
+          <td>{{ service.description }}</td>
+          <td>
+            <button type="button" class="action-button" @click="editService(service)">Edit</button>
+            <button type="button" class="action-button" @click="deleteService(service)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 
 <script>
-import editServicesModal from './editServicesModal.vue'
-import addServiceModal from './addServicesModal.vue'
-import eventForm from './eventForm.vue'
-
+import { useMyStore } from '@/store/store.js'
+import { ref } from 'vue'
 
 export default {
-  components: { editServicesModal, addServiceModal, eventForm},
-  data() {
-    return {
-      recentServices: [
-        {
-          _id: 1,
-          name: 'Service 1',
-          status: 'active',
-          description:
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
-        },
-        {
-          _id: 2,
-          name: 'Service 2',
-          status: 'inactive',
-          description:
-            'Sed do eiusmod tempor incididunt ut labore'
-        },
-        {
-          _id: 3,
-          name: 'Service 3',
-          status: 'active',
-          description:
-            'Ut enim ad minim veniam, quis nostrud'
-        },
-        {
-          _id: 4,
-          name: 'Service 4',
-          status: 'inactive',
-          description:
-            'Duis aute irure dolor in reprehenderit in'
-        },
-        {
-          _id: 5,
-          name: 'Service 5',
-          status: 'active',
-          description:
-            'Excepteur sint occaecat cupidatat non proident'
+  name: 'ServicesTable',
+  setup() {
+    const store = useMyStore()
+
+    const serviceName = ref('')
+    const serviceStatus = ref('')
+    const serviceDescription = ref('')
+    const editingService = ref(null)
+
+    const addOrUpdateService = () => {
+      if (editingService.value) {
+        // Update existing service
+        editingService.value.name = serviceName.value
+        editingService.value.status = serviceStatus.value
+        editingService.value.description = serviceDescription.value
+        editingService.value = null
+      } else {
+        // Add new service
+        const newService = {
+          _id: store.recentServices.length + 1,
+          name: serviceName.value,
+          status: serviceStatus.value,
+          description: serviceDescription.value,
         }
-      ],
-      showModal: false,
-      selectedService: null,
-      showAddServiceModal: false,
-      newService: {
-        name: '',
-        status: '',
-        description: ''
+        store.recentServices.push(newService)
       }
-      
+      serviceName.value = ''
+      serviceStatus.value = ''
+      serviceDescription.value = ''
+    }
+
+    const editService = (service) => {
+      editingService.value = service
+      serviceName.value = service.name
+      serviceStatus.value = service.status
+      serviceDescription.value = service.description
+    }
+
+    const deleteService = (service) => {
+      const index = store.recentServices.indexOf(service)
+      store.recentServices.splice(index, 1)
+    }
+
+    return {
+      recentServices: store.recentServices,
+      serviceName,
+      serviceStatus,
+      serviceDescription,
+      editingService,
+      addOrUpdateService,
+      editService,
+      deleteService,
     }
   },
-  created() {
-  console.log(this.recentServices);
-}
-,
-  methods: {
-    editServiceModal(service) {
-      this.selectedService = service
-      this.showModal = !this.showModal
-      if (this.showModal) {
-        console.log('editServiceModal')
-      }
-      if (!this.showModal) {
-        console.log('save editServiceModal')
-      }
-    },
-    toggleAddServiceModal() {
-      this.showAddServiceModal = !this.showAddServiceModal
-      if (this.showAddServiceModal) {
-        console.log('toggleAddServiceModal')
-      }
-    },
-    addService() {
-      console.log('Adding service:', this.newService)
-      this.recentServices.push({
-        _id: this.recentServices.length + 1,
-        name: this.newService.name,
-        status: this.newService.status,
-        description: this.newService.description
-      })
-      this.showAddServiceModal = false
-      this.newService = {
-        name: '',
-        status: '',
-        description: ''
-      }
-    },
-    addNewService(service) {
-      this.recentServices.push(service)
-    }
-  }
 }
 </script>
 
+<style scoped>
+.services-table {
+  border-collapse: collapse;
+  width: 100%;
+}
 
+.services-table th {
+  background-color: #f2f2f2;
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
 
-<style lang="scss" scoped></style>
+.services-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.services-table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  padding: 24px;
+  border-radius: 6px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+}
+
+form div {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+form label {
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+form input,
+form select,
+form textarea {
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  transition: border-color 0.2s ease-in-out;
+}
+
+form input:focus,
+form select:focus,
+form textarea:focus {
+  border-color: #C90F30;
+}
+
+form button {
+  background-color: #C90F30;
+  color: #fff;
+  padding: 12px;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.services-table button {
+  background-color: #ddd;
+  color: #333;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.action-button {
+  margin-right: 8px;
+}
+
+.services-table button:hover {
+  background-color: #C90F30;
+  color: #fff;
+}
+
+.page-header {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+}
+
+</style>
