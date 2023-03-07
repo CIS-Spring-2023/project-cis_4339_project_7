@@ -1,6 +1,7 @@
 <script>
 import axios from 'axios'
 const apiURL = import.meta.env.VITE_ROOT_API
+import { useLoggedInUserStore } from "@/store/loggedInUser";
 
 export default {
   name: 'App',
@@ -13,8 +14,13 @@ export default {
     axios.get(`${apiURL}/org`).then((res) => {
       this.orgName = res.data.name
     })
-  }
+  },
+    setup() {
+    const user = useLoggedInUserStore();
+    return { user };
+  },
 }
+
 </script>
 <template>
   <main class="flex flex-row">
@@ -25,6 +31,17 @@ export default {
         </section>
         <nav class="mt-10">
           <ul class="flex flex-col gap-4">
+            <li v-if="!user.isLoggedIn">
+              <router-link to="/login">
+                <button class="dash-login">Login</button>
+              </router-link>
+            </li>
+            <li v-if="user.isLoggedIn">
+              <a href="">
+                <span @click="store.logout()"><button class="dash-login">Logout</button></span>
+              </a>
+            </li>
+            <br>
             <li>
               <router-link to="/">
                 <span
@@ -35,7 +52,7 @@ export default {
                 Dashboard
               </router-link>
             </li>
-            <li>
+            <li v-if="user.isLoggedIn">
               <router-link to="/intakeform">
                 <span
                   style="position: relative; top: 6px"
@@ -45,7 +62,7 @@ export default {
                 Client Intake Form
               </router-link>
             </li>
-            <li>
+            <li v-if="user.isLoggedIn">
               <router-link to="/eventform">
                 <span
                   style="position: relative; top: 6px"
@@ -75,7 +92,7 @@ export default {
                 Find Event
               </router-link>
             </li>
-            <li>
+            <li v-if="user.isLoggedIn">
               <router-link to="/manageservices">
                 <span
                   style="position: relative; top: 6px"
