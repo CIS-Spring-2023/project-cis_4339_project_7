@@ -1,7 +1,10 @@
 <script>
+//used the v-if on the different routerlinks to allow for user role tabs. The idea was used from pinia class
+
 import axios from 'axios'
 const apiURL = import.meta.env.VITE_ROOT_API
-import { useLoggedInUserStore } from "@/store/loggedInUser";
+import { useVisitor, useEditor} from "@/store/loggedInUser";
+
 
 export default {
   name: 'App',
@@ -16,8 +19,9 @@ export default {
     })
   },
     setup() {
-    const user = useLoggedInUserStore();
-    return { user };
+    const visitor = useVisitor();
+    const editor = useEditor();
+    return { visitor, editor };
   },
 }
 
@@ -31,12 +35,17 @@ export default {
         </section>
         <nav class="mt-10">
           <ul class="flex flex-col gap-4">
-            <li v-if="!user.isLoggedIn">
+            <li v-if="(!visitor.isVisitorLoggedIn) && (!editor.isEditorLoggedIn)">
               <router-link to="/login">
                 <button class="dash-login">Login</button>
               </router-link>
             </li>
-            <li v-if="user.isLoggedIn">
+            <li v-if="visitor.isVisitorLoggedIn">
+              <a href="">
+                <span @click="store.logout()"><button class="dash-login">Logout</button></span>
+              </a>
+            </li>
+            <li v-if="editor.isEditorLoggedIn">
               <a href="">
                 <span @click="store.logout()"><button class="dash-login">Logout</button></span>
               </a>
@@ -52,7 +61,7 @@ export default {
                 Dashboard
               </router-link>
             </li>
-            <li v-if="user.isLoggedIn">
+            <li v-if="editor.isEditorLoggedIn">
               <router-link to="/intakeform">
                 <span
                   style="position: relative; top: 6px"
@@ -62,7 +71,7 @@ export default {
                 Client Intake Form
               </router-link>
             </li>
-            <li v-if="user.isLoggedIn">
+            <li v-if="editor.isEditorLoggedIn">
               <router-link to="/eventform">
                 <span
                   style="position: relative; top: 6px"
@@ -72,7 +81,7 @@ export default {
                 Create Event
               </router-link>
             </li>
-            <li>
+            <li v-if="(visitor.isVisitorLoggedIn) || (editor.isEditorLoggedIn)">
               <router-link to="/findclient">
                 <span
                   style="position: relative; top: 6px"
@@ -82,7 +91,7 @@ export default {
                 Find Client
               </router-link>
             </li>
-            <li>
+            <li v-if="(visitor.isVisitorLoggedIn) || (editor.isEditorLoggedIn)">
               <router-link to="/findevents">
                 <span
                   style="position: relative; top: 6px"
@@ -92,7 +101,7 @@ export default {
                 Find Event
               </router-link>
             </li>
-            <li v-if="user.isLoggedIn">
+            <li v-if="editor.isEditorLoggedIn">
               <router-link to="/manageservices">
                 <span
                   style="position: relative; top: 6px"

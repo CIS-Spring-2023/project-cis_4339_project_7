@@ -1,0 +1,5 @@
+Editor Login:
+-------------
+
+User: editor
+Password: editor
