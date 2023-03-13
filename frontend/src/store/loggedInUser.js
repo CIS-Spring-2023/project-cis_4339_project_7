@@ -2,27 +2,38 @@
 //Similar code with few changes with them implementation of a visitor role that will be used as a button
 
 import { defineStore } from 'pinia'
+import { loginrole } from '@/store/loginrole'
 
 //Visitor Role
 //defining a store
 export const useVisitor = defineStore({
+  // id is only required for devtools with the Pinia store
   id: 'visitor',
+  //central part of the store
   state: () => {
     return {
-      name: '',
+      name: "",
       isVisitorLoggedIn: false,
     }
   },
+
   actions: {
-    login() {
-      this.$patch({
-        isVisitorLoggedIn: true,
-      });
+    async login(username, password) {
+      try {
+        const response = await loginrole(username, password);
+        this.$patch({
+          isVisitorLoggedIn: response.isAllowed,
+          name: response.name,
+        })
+        this.$router.push("/");
+      } catch(error) {
+        console.log(error)
+      }
     },
     logout() {
       this.$patch({
-        name: '',
-        isVisitorLoggedIn: false,
+        name: "",
+        isVisitorLoggedIn: false
       });
     }
   }
@@ -55,16 +66,10 @@ export const useEditor = defineStore({
       }
     },
     logout() {
-      this.patch({
+      this.$patch({
         name: "",
         isEditorLoggedIn: false
       });
     }
   }
 });
-
-export function loginrole(u, p) {
-  if (u === "editor" && p === "editor") return Promise.resolve({ isAllowed: true, name: "Editor" });
-  if (p === "editor") return Promise.resolve({ isAllowed: false });
-  return Promise.reject(new Error("invalid credentials"));
-}

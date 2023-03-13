@@ -3,3 +3,9 @@ Editor Login:
 
 User: editor
 Password: editor
+
+Visitor Login:
+-------------
+
+User: visitor
+Password: visitor
