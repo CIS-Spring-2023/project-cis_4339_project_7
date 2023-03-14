@@ -1,3 +1,4 @@
+//code was taken from the VueJS Student Management App folder
 <template>
   <div class="shadow-lg rounded-lg overflow-hidden">
     <canvas ref="attendance_Chart"></canvas>
