@@ -1,3 +1,4 @@
+//code was taken from the VueJS Student Management App folder
 <template>
   <div>
     <!-- canvas element for chart -->
