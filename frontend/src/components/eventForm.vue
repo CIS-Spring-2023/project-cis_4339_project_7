@@ -3,13 +3,18 @@ import useVuelidate from '@vuelidate/core'
 import { required } from '@vuelidate/validators'
 import axios from 'axios'
 const apiURL = import.meta.env.VITE_ROOT_API
+// import store
 import { useMyStore } from '@/store/store.js'
 
 export default {
+  // Component name
   setup() {
+    // Use store
     const myStore = useMyStore()
+    // Filter active services
     const activeServices = myStore.recentServices.filter(service => service.status === 'active')
         
+    // Use Vuelidate
     return { v$: useVuelidate({ $autoDirty: true }), myStore, activeServices }
   },
   data() {
@@ -30,12 +35,16 @@ export default {
       recentServices: [] // add recentServices to data property
     }
   },
+  // Computed property
   computed: {
+    // Get services from store
     services() {
       return this.myStore.services
     }
   },
+  // Methods
   methods: {
+    // Add service to event
     async handleSubmitForm() {
       const isFormCorrect = await this.v$.$validate()
       if (isFormCorrect) {
@@ -144,30 +153,32 @@ export default {
           <!-- form field -->
           <div class="flex flex-col grid-cols-3">
             <label>Services Offered at Event</label>
+            <!-- table -->
             <div class="table-container">
-  <table class="services-table">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Status</th>
-        <th>Description</th>
-        <th>Include in Event</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="service in activeServices" :key="service._id">
-        <td>{{ service._id }}</td>
-        <td>{{ service.name }}</td>
-        <td>{{ service.status }}</td>
-        <td>{{ service.description }}</td>
-        <td>
-          <input type="checkbox" class="action-checkbox" v-model="service.includeInEvent">
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+              <table class="services-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Status</th>
+                    <th>Description</th>
+                    <th>Include in Event</th>
+                  </tr>
+                </thead>
+              <tbody>
+                <!-- loop through active services -->
+                <tr v-for="service in activeServices" :key="service._id">
+                  <td>{{ service._id }}</td>
+                  <td>{{ service.name }}</td>
+                  <td>{{ service.status }}</td>
+                  <td>{{ service.description }}</td>
+                  <td>
+                    <input type="checkbox" class="action-checkbox" v-model="service.includeInEvent">
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            </div>
           </div>
         </div>
 
@@ -250,6 +261,8 @@ export default {
 </template>
 
 <style>
+
+/* table styles */
 .services-table {
   width: 100%;
   border-collapse: collapse;

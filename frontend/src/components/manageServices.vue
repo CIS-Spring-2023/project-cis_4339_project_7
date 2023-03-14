@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- Add/Edit Service Form -->
     <h2 class="page-header">Add/Edit Service</h2>
     <form>
       <div>
@@ -7,6 +8,7 @@
         <input id="name" type="text" v-model="serviceName" required>
       </div>
       <div>
+        <!-- Status dropdown -->
         <label for="status">Status:</label>
         <select id="status" v-model="serviceStatus" required>
           <option value="active">Active</option>
@@ -21,6 +23,7 @@
         {{ editingService ? 'Update Service' : 'Add Service' }}
       </button>
     </form>
+    <!-- Table Header -->
     <table class="services-table">
       <thead>
         <tr>
@@ -31,13 +34,16 @@
           <th>Action</th>
         </tr>
       </thead>
+      <!-- Table body -->
       <tbody>
+        <!-- Loop through recentServices array and display each service -->
         <tr v-for="service in recentServices" :key="service._id">
           <td>{{ service._id }}</td>
           <td>{{ service.name }}</td>
           <td>{{ service.status }}</td>
           <td>{{ service.description }}</td>
           <td>
+            <!-- Edit and Delete buttons -->
             <button type="button" class="action-button" @click="editService(service)">Edit</button>
             <button type="button" class="action-button" @click="deleteService(service)">Delete</button>
           </td>
@@ -48,20 +54,30 @@
 </template>
 
 <script>
+// Import store
 import { useMyStore } from '@/store/store.js'
+// Import ref from Vue
 import { ref } from 'vue'
 
 export default {
+  // Component name
   name: 'ServicesTable',
+  // Setup function
   setup() {
+
+    // Use store
     const store = useMyStore()
 
+    // Refs
     const serviceName = ref('')
     const serviceStatus = ref('')
     const serviceDescription = ref('')
     const editingService = ref(null)
 
+    // Methods
+    // Add or update service
     const addOrUpdateService = () => {
+      // Check if editingService is null
       if (editingService.value) {
         // Update existing service
         editingService.value.name = serviceName.value
@@ -76,13 +92,16 @@ export default {
           status: serviceStatus.value,
           description: serviceDescription.value,
         }
+        // Push new service to recentServices array
         store.recentServices.push(newService)
       }
+      // Reset form
       serviceName.value = ''
       serviceStatus.value = ''
       serviceDescription.value = ''
     }
 
+    // Edit service
     const editService = (service) => {
       editingService.value = service
       serviceName.value = service.name
@@ -90,11 +109,14 @@ export default {
       serviceDescription.value = service.description
     }
 
+    // Delete service
     const deleteService = (service) => {
       const index = store.recentServices.indexOf(service)
+      // Remove service from recentServices array
       store.recentServices.splice(index, 1)
     }
 
+    // Return values
     return {
       recentServices: store.recentServices,
       serviceName,
@@ -110,6 +132,8 @@ export default {
 </script>
 
 <style scoped>
+
+/* Table styles */
 .services-table {
   border-collapse: collapse;
   width: 100%;
@@ -131,6 +155,8 @@ export default {
   background-color: #f2f2f2;
 }
 
+
+/* Form styles */
 form {
   display: flex;
   flex-direction: column;
@@ -178,6 +204,7 @@ form button {
   cursor: pointer;
 }
 
+/* Button styles */
 .services-table button {
   background-color: #ddd;
   color: #333;
@@ -193,6 +220,7 @@ form button {
   margin-right: 8px;
 }
 
+/* Hover styles */
 .services-table button:hover {
   background-color: #C90F30;
   color: #fff;
