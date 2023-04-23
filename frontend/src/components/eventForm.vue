@@ -11,6 +11,10 @@ export default {
   setup() {
     // Use store
     const myStore = useMyStore()
+
+    const recentServices = myStore.recentServices
+
+    console.log(recentServices)
     // Filter active services
     const activeServices = myStore.recentServices.filter(service => service.status === 'active')
         
@@ -39,7 +43,7 @@ export default {
   computed: {
     // Get services from store
     services() {
-      return this.myStore.services
+      return this.myStore.recentServices
     }
   },
   // Methods
@@ -48,7 +52,7 @@ export default {
     async handleSubmitForm() {
       const isFormCorrect = await this.v$.$validate()
       if (isFormCorrect) {
-        this.event.services = this.services.concat(this.recentServices)
+        this.event.recentServices = this.services.concat(this.recentServices)
         axios
           .post(`${apiURL}/events`, this.event)
           .then(() => {

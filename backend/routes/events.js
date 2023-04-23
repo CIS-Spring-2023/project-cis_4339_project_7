@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 
 const org = process.env.ORG
+console.log(org)
 
 // importing data model schemas
 const { events } = require('../models/models')

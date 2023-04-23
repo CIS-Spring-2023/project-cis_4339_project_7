@@ -18,7 +18,7 @@ app.use(
 
 // sets up mongoose for the mongoDB connection
 mongoose
-  .connect('mongodb+srv://cis4339:cis4339@backend.prxvtjm.mongodb.net/test')
+  .connect(process.env.MONGO_URL)
   .then(() => {
     console.log('Database connection Success!')
   })
@@ -27,7 +27,7 @@ mongoose
   })
 
 // declare port number for the api
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 3000 //use the port number from the .env file or use 3000
 
 // setup and access request body
 app.use(express.json())
