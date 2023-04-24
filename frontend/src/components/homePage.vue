@@ -1,14 +1,14 @@
 <script>
 import { DateTime } from 'luxon'
 import axios from 'axios'
-import PieChart from '@/components/pie_graphChart.vue'
+import clientsZip from '@/components/pieChart.vue'
 import AttendanceChart from './barChart.vue'
 const apiURL = import.meta.env.VITE_ROOT_API
 
 export default {
   components: {
     AttendanceChart,
-    PieChart
+    clientsZip
   },
   data() {
     return {
@@ -68,6 +68,63 @@ export default {
     // method to allow click through table to event details
     editEvent(eventID) {
       this.$router.push({ name: 'eventdetails', params: { id: eventID } })
+    },
+    async getclientsZipdata() {
+      try {
+        this.error = null
+        this.loading = true
+        const response = await axios.get(`${apiURL}/clients/zipcode`)
+        console.log('zipData:', response) // add this line
+        const zipData = response.data.map((item) => ({
+          zipCode: item._id,
+          count: item.count
+        }))
+        const ctx = document.getElementById('myChart').getContext('2d')
+        const chart = new Chart(ctx, {
+          type: 'pie',
+          data: {
+            labels: zipData.map((item) => item.zipCode),
+            datasets: [
+              {
+                data: zipData.map((item) => item.count),
+                backgroundColor: [
+                  '#FF6384',
+                  '#36A2EB',
+                  '#FFCE56',
+                  '#8D6E63',
+                  '#4CAF50',
+                  '#F44336',
+                  '#9C27B0',
+                  '#3F51B5',
+                  '#FF9800',
+                  '#795548'
+                ]
+              }
+            ]
+          }
+        })
+      } catch (err) {
+        if (err.response) {
+          // client received an error response (5xx, 4xx)
+          this.error = {
+            title: 'Server Response',
+            message: err.message
+          }
+        } else if (err.request) {
+          // client never received a response, or request never left
+          this.error = {
+            title: 'Unable to Reach Server',
+            message: err.message
+          }
+        } else {
+          // There's probably an error in your code
+          this.error = {
+            title: 'Application Error',
+            message: err.message
+          }
+        }
+      }
+      this.loading = false
     }
   }
 }
@@ -135,9 +192,34 @@ export default {
             </div>
             <!-- End of error alert -->
           </div>
+          <br />
           <div>
-            <br />
-            <PieChart />
+            <clientsZip
+              v-if="!loading && !error"
+              :label="labels"
+              :chart-data="chartData"
+            ></clientsZip>
+
+            <!-- Start of loading animation -->
+            <div class="mt-40" v-if="loading">
+              <p
+                class="text-6xl font-bold text-center text-gray-500 animate-pulse"
+              >
+                Loading...
+              </p>
+            </div>
+            <!-- End of loading animation -->
+
+            <!-- Start of error alert -->
+            <div class="mt-12 bg-red-50" v-if="error">
+              <h3 class="px-4 py-1 text-4xl font-bold text-white bg-red-800">
+                {{ error.title }}
+              </h3>
+              <p class="p-4 text-lg font-bold text-red-900">
+                {{ error.message }}
+              </p>
+            </div>
+            <!-- End of error alert -->
           </div>
         </div>
       </div>

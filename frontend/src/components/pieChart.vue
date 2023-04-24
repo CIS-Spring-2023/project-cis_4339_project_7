@@ -1,61 +1,70 @@
-//code was taken from the VueJS Student Management App folder
 <template>
-  <div class="shadow-lg rounded-lg overflow-hidden">
-    <canvas ref="attendance_Chart"></canvas>
+  <div>
+    <canvas id="myChart"></canvas>
   </div>
 </template>
 
 <script>
-import { Chart, registerables } from 'chart.js'
-Chart.register(...registerables)
+import axios from 'axios'
+import Chart from 'chart.js/auto'
+const apiURL = import.meta.env.VITE_ROOT_API
 
-// Define the component
 export default {
-  props: {
-    label: {
-      type: Array
-    },
-    chartData: {
-      type: Array
-    }
+  mounted() {
+    this.fetchData()
   },
-  async mounted() {
-    const backgroundColor = this.chartData.map(() => this.getColor())
-    const borderColor = backgroundColor.map((e) =>
-      e.replace(/[\d\.]+\)$/g, '1)')
-    )
-    // Create a new chart instance using the canvas element and data
-
-    await new Chart(this.$refs.attendance_Chart, {
-      type: 'pie',
-      data: {
-        labels: this.label,
-        datasets: [
-          {
-            borderWidth: 1,
-            backgroundColor: backgroundColor,
-            borderColor: borderColor,
-            data: this.chartData
-          }
-        ]
-      },
-      options: {
-        plugins: {
-          legend: {
-            display: false
-          }
-        },
-        responsive: true,
-        maintainAspectRatio: true
-      }
-    })
-  },
-  // Define the getColor method used to generate random RGBA colors
-
   methods: {
-    getColor() {
-      let channel = () => Math.random() * 255
-      return `rgba(${channel()}, ${channel()}, ${channel()}, 0.2)`
+    async fetchData() {
+      try {
+        const response = await axios.get(`${apiURL}/clients/zipcode`)
+        const data = response.data
+        console.log('Data:', data)
+        const canvas = document.getElementById('myChart')
+        const chartData = {
+          labels: data.map((item) => item._id),
+          datasets: [
+            {
+              data: data.map((item) => item.count),
+              backgroundColor: [
+                '#FF6384',
+                '#36A2EB',
+                '#FFCE56',
+                '#4BC0C0',
+                '#FF8C00',
+                '#9370DB',
+                '#1E90FF',
+                '#FFD700',
+                '#FF1493',
+                '#32CD32',
+                '#FF69B4',
+                '#00BFFF',
+                '#8A2BE2',
+                '#00CED1',
+                '#FFA07A',
+                '#00FA9A',
+                '#FF00FF',
+                '#DC143C',
+                '#7B68EE',
+                '#00BFFFF',
+                '#FF6347',
+                '#FFFF00'
+              ]
+            }
+          ]
+        }
+        console.log('ChartData:', chartData)
+        const options = {
+          responsive: true,
+          maintainAspectRatio: false
+        }
+        new Chart(canvas, {
+          type: 'pie',
+          data: chartData,
+          options
+        })
+      } catch (error) {
+        console.log('Error:', error)
+      }
     }
   }
 }
