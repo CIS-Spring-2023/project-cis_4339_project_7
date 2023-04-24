@@ -12,9 +12,6 @@ export default {
     // Use store
     const myStore = useMyStore()
 
-    const recentServices = myStore.recentServices
-
-    console.log(recentServices)
     // Filter active services
     const activeServices = myStore.recentServices.filter(service => service.status === 'active')
         
@@ -35,14 +32,13 @@ export default {
           zip: ''
         },
         description: ''
-      },
-      recentServices: [] // add recentServices to data property
+      }
     }
   },
   // Computed property
   computed: {
     // Get services from store
-    services() {
+    recentServices() {
       return this.myStore.recentServices
     }
   },
@@ -52,7 +48,9 @@ export default {
     async handleSubmitForm() {
       const isFormCorrect = await this.v$.$validate()
       if (isFormCorrect) {
-        this.event.recentServices = this.services.concat(this.recentServices)
+        const selectedServices = this.recentServices.filter(service => service.includeInEvent)
+        console.log(this.event)
+        this.event.services = selectedServices
         axios
           .post(`${apiURL}/events`, this.event)
           .then(() => {
@@ -75,6 +73,7 @@ export default {
   }
 }
 </script>
+
 
 <template>
   <main>
@@ -171,15 +170,15 @@ export default {
                 </thead>
               <tbody>
                 <!-- loop through active services -->
-                <tr v-for="service in activeServices" :key="service._id">
-                  <td>{{ service._id }}</td>
-                  <td>{{ service.name }}</td>
-                  <td>{{ service.status }}</td>
-                  <td>{{ service.description }}</td>
-                  <td>
-                    <input type="checkbox" class="action-checkbox" v-model="service.includeInEvent">
-                  </td>
-                </tr>
+<tr v-for="service in activeServices" :key="service._id">
+  <td>{{ service._id }}</td>
+  <td>{{ service.name }}</td>
+  <td>{{ service.status }}</td>
+  <td>{{ service.description }}</td>
+  <td>
+    <input type="checkbox" class="action-checkbox" v-model="service.includeInEvent">
+  </td>
+</tr>
               </tbody>
             </table>
             </div>

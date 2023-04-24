@@ -57,7 +57,7 @@
 // Import store
 import { useMyStore } from '@/store/store.js'
 // Import ref from Vue
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 
 export default {
   // Component name
@@ -116,6 +116,11 @@ export default {
       store.recentServices.splice(index, 1)
     }
 
+    // Call fetchRecentServices action when component is mounted
+    onMounted(() => {
+      store.fetchRecentServices()
+    })
+
     // Return values
     return {
       recentServices: store.recentServices,
@@ -130,6 +135,7 @@ export default {
   },
 }
 </script>
+
 
 <style scoped>
 
