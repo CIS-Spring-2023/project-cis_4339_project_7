@@ -1,3 +1,5 @@
+<!-- Code used to create the pie chart was adapted from the original bar chart code.
+   Specific modifications were made to the code to generate a Pie chart. -->
 <template>
   <div>
     <canvas id="myChart"></canvas>
