@@ -6,14 +6,15 @@ const apiURL = 'http://localhost:3000'
 
 export const useMyStore = defineStore('myStore', {
   state: () => ({
-    recentServices: []
+    recentServices: [],
+    eventServices: []
   }),
   actions: {
     async fetchRecentServices() {
       try {
         const response = await axios.get(`${apiURL}/services`)
         this.recentServices = response.data
-        console.log(this.recentServices)
+        // console.log(this.recentServices)
       } catch (error) {
         console.error(error)
       }

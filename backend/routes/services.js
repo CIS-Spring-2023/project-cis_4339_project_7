@@ -9,11 +9,26 @@ router.get('/', async (req, res, next) => {
   try {
     const allServices = await services.find({});
     res.json(allServices);
-    console.log(allServices);
+    // console.log(allServices);
   } catch (error) {
     next(error);
   }
 });
+
+// Get a service by ID
+router.get('/services/id/:id', async (req, res, next) => {
+  try {
+    const service = await Service.findById(req.params.id)
+    if (!service) {
+      const error = new Error(`Service with ID ${req.params.id} not found`)
+      error.statusCode = 404
+      throw error
+    }
+    res.json(service)
+  } catch (error) {
+    next(error)
+  }
+})
 
 
 // POST a new service

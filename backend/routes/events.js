@@ -31,9 +31,11 @@ router.get('/id/:id', (req, res, next) => {
       res.status(400).send('Event not found')
     } else {
       res.json(data)
+      // console.log(data)
     }
   })
 })
+
 
 // GET events based on search query
 // Ex: '...?name=Food&searchBy=name'
