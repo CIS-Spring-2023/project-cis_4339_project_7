@@ -31,7 +31,7 @@ router.get('/id/:id', (req, res, next) => {
       res.status(400).send('Event not found')
     } else {
       res.json(data)
-      // console.log(data)
+      console.log(data)
     }
   })
 })
@@ -103,6 +103,7 @@ router.post('/', (req, res, next) => {
 // PUT update event
 router.put('/update/:id', (req, res, next) => {
   events.findByIdAndUpdate(req.params.id, req.body, (error, data) => {
+    console.log(req.body)
     if (error) {
       return next(error)
     } else {
@@ -110,6 +111,25 @@ router.put('/update/:id', (req, res, next) => {
     }
   })
 })
+
+// PUT update event services
+router.put('/update/:id/services', async (req, res, next) => {
+  try {
+    const event = await Event.findById(req.params.id)
+    if (!event) {
+      const error = new Error(`Event with ID ${req.params.id} not found`)
+      error.statusCode = 404
+      throw error
+    }
+    event.services = req.body
+    console.log(event.services)
+    await event.save()
+    res.sendStatus(200)
+  } catch (error) {
+    next(error)
+  }
+})
+
 
 // PUT add attendee to event
 router.put('/register', (req, res, next) => {

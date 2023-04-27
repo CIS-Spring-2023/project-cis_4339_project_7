@@ -3,19 +3,36 @@ import useVuelidate from '@vuelidate/core'
 import { required } from '@vuelidate/validators'
 import axios from 'axios'
 import { DateTime } from 'luxon'
-import { useMyStore } from '@/store/store.js'
+import { onMounted } from 'vue'
+import { ref, computed } from 'vue'
 const apiURL = import.meta.env.VITE_ROOT_API
 
 export default {
   props: ['id'],
   setup() {
-    const myStore = useMyStore()
+
+    const recentServices = ref([])
+    
+    const fetchRecentServices = () => {
+      axios.get(`${apiURL}/services`)
+        .then(res => {
+          recentServices.value = res.data
+          // console.log(recentServices.value)
+        })
+    }
+
+    // Call fetchRecentServices action when component is mounted
+    onMounted(() => {
+      fetchRecentServices()
+    })
 
     // Filter active services
-    const activeServices = myStore.recentServices.filter(service => service.status === 'active')
-
+    const activeServices = computed(() => {
+      return recentServices.value.filter(service => service.status === 'active')
+    })
+    // console.log(activeServices)
   
-    return { v$: useVuelidate({ $autoDirty: true }), myStore, activeServices }
+    return { v$: useVuelidate({ $autoDirty: true }), recentServices, activeServices }
   },
   data() {
     return {
@@ -33,28 +50,35 @@ export default {
         },
         description: '',
         attendees: []
-      }
+      },
+      includedServices: []
     }
   },
 
-  computed: {
-    // Get services from store
-    recentServices() {
-      return this.myStore.recentServices
-    }
-  },
-    
   created() {
-    axios.get(`${apiURL}/events/id/${this.$route.params.id}`).then((res) => {
-      this.event = res.data
-      this.event.date = this.formattedDate(this.event.date)
-      this.event.attendees.forEach((e) => {
-        axios.get(`${apiURL}/clients/id/${e}`).then((res) => {
-          this.clientAttendees.push(res.data)
-        })
+  axios.get(`${apiURL}/events/id/${this.$route.params.id}`).then((res) => {
+    this.event = res.data
+    // console.log(this.event)
+    // Set the initial included services based on the event's services
+    this.includedServices = this.event.services.slice()
+    // console.log(this.includedServices)
+
+    // console.log(this.event)
+    this.event.date = this.formattedDate(this.event.date)
+    this.event.attendees.forEach((e) => {
+      axios.get(`${apiURL}/clients/id/${e}`).then((res) => {
+        this.clientAttendees.push(res.data)
       })
     })
-  },
+
+    const serviceRequests = this.event.services.map((serviceID) => axios.get(`${apiURL}/services/id/${serviceID}`))
+    Promise.all(serviceRequests).then((responses) => {
+      this.event.services = responses.map((response) => response.data)
+      // console.log(this.event.services)
+    })
+  })
+},
+
 
   methods: {
     // better formatted date, converts UTC to local time
@@ -66,12 +90,30 @@ export default {
         .setZone(DateTime.now().zoneName, { keepLocalTime: true })
         .toISODate()
     },
-    handleEventUpdate() {
-      axios.put(`${apiURL}/events/update/${this.id}`, this.event).then(() => {
-        alert('Update has been saved.')
-        this.$router.back()
-      })
+    toggleService(service) {
+      const index = this.includedServices.findIndex((s) => s._id === service._id)
+      if (index !== -1) {
+        this.includedServices.splice(index, 1)
+      } else {
+        this.includedServices.push(service)
+      }
     },
+    handleEventUpdate() {
+  // First, update the event object with the selected services
+  this.event.services = this.includedServices.map((service) => service._id)
+
+  // Then, send the updated event to the API to be saved
+  axios.put(`${apiURL}/events/update/${this.id}`, this.event)
+    .then(() => {
+      alert('Update has been saved.')
+      this.$router.back()
+    })
+    .catch((error) => {
+      console.error(error)
+      alert('An error occurred while saving the update.')
+    })
+},
+
     editClient(clientID) {
       this.$router.push({ name: 'updateclient', params: { id: clientID } })
     },
@@ -138,28 +180,29 @@ export default {
             <!-- table -->
             <div class="table-container">
               <table class="services-table">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Status</th>
-                    <th>Description</th>
-                    <th>Include in Event</th>
-                  </tr>
-                </thead>
-              <tbody>
-                <!-- loop through active services -->
-                <tr v-for="service in activeServices" :key="service._id">
-                  <td>{{ service._id }}</td>
-                  <td>{{ service.name }}</td>
-                  <td>{{ service.status }}</td>
-                  <td>{{ service.description }}</td>
-                  <td>
-                    <input type="checkbox" class="action-checkbox" v-model="service.includeInEvent">
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+      <th>Include in Event</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- loop through active services -->
+    <tr v-for="service in activeServices" :key="service._id">
+      <td>{{ service.name }}</td>
+      <td>{{ service.description }}</td>
+      <td>
+        <input type="checkbox"
+               class="action-checkbox"
+               v-model="service.includeInEvent"
+               :checked="includedServices.includes(service._id)"
+               @change="toggleService(service)">
+      </td>
+    </tr>
+  </tbody>
+</table>
+
             </div>
           </div>
         </div>

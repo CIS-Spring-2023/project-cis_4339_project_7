@@ -3,20 +3,34 @@ import useVuelidate from '@vuelidate/core'
 import { required } from '@vuelidate/validators'
 import axios from 'axios'
 const apiURL = import.meta.env.VITE_ROOT_API
-// import store
-import { useMyStore } from '@/store/store.js'
+import { ref, computed, onMounted } from 'vue'
 
 export default {
   // Component name
   setup() {
-    // Use store
-    const myStore = useMyStore()
+    // Refs
+    const recentServices = ref([])
+
+    // Fetch recent services
+    const fetchRecentServices = () => {
+      axios.get(`${apiURL}/services`)
+        .then(res => {
+          recentServices.value = res.data
+        })
+    }
+
+    // Call fetchRecentServices action when component is mounted
+    onMounted(() => {
+      fetchRecentServices()
+    })
 
     // Filter active services
-    const activeServices = myStore.recentServices.filter(service => service.status === 'active')
-        
+    const activeServices = computed(() => {
+      return recentServices.value.filter(service => service.status === 'active')
+    })
+
     // Use Vuelidate
-    return { v$: useVuelidate({ $autoDirty: true }), myStore, activeServices }
+    return { v$: useVuelidate({ $autoDirty: true }), recentServices, activeServices }
   },
   data() {
     return {
@@ -35,13 +49,6 @@ export default {
       }
     }
   },
-  // Computed property
-  computed: {
-    // Get services from store
-    recentServices() {
-      return this.myStore.recentServices
-    }
-  },
   // Methods
   methods: {
     // Add service to event
@@ -51,8 +58,7 @@ export default {
         const selectedServices = this.recentServices.filter(service => service.includeInEvent)
         // console.log(this.event)
         this.event.services = selectedServices
-        axios
-          .post(`${apiURL}/events`, this.event)
+        axios.post(`${apiURL}/events`, this.event)
           .then(() => {
             alert('Event has been added.')
             this.$router.push({ name: 'findevents' })
@@ -73,6 +79,7 @@ export default {
   }
 }
 </script>
+
 
 
 <template>
@@ -161,9 +168,7 @@ export default {
               <table class="services-table">
                 <thead>
                   <tr>
-                    <th>ID</th>
                     <th>Name</th>
-                    <th>Status</th>
                     <th>Description</th>
                     <th>Include in Event</th>
                   </tr>
@@ -171,9 +176,7 @@ export default {
               <tbody>
                 <!-- loop through active services -->
                 <tr v-for="service in activeServices" :key="service._id">
-                  <td>{{ service._id }}</td>
                   <td>{{ service.name }}</td>
-                  <td>{{ service.status }}</td>
                   <td>{{ service.description }}</td>
                   <td>
                     <input type="checkbox" class="action-checkbox" v-model="service.includeInEvent">

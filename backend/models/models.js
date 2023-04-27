@@ -132,14 +132,18 @@ const eventDataSchema = new Schema(
 // collection for services
 const serviceDataSchema = new Schema(
   {
-    _id: { type: String, default: uuid.v1 },
+    _id: { 
+      type: String, 
+      default: uuid.v1 
+    },
     name: {
       type: String,
       required: true
     },
-    org: {
+    status: {
       type: String,
-      required: true
+      enum: ['active', 'inactive'],
+      default: 'active'
     },
     description: {
       type: String

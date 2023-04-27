@@ -15,26 +15,29 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-// Get a service by ID
-router.get('/services/id/:id', async (req, res, next) => {
+// GET a single service by ID
+router.get('/id/:id', async (req, res, next) => {
   try {
-    const service = await Service.findById(req.params.id)
+    const service = await services.findById(req.params.id)
     if (!service) {
       const error = new Error(`Service with ID ${req.params.id} not found`)
       error.statusCode = 404
       throw error
     }
-    res.json(service)
+    const { _id, name, description, status } = service
+    res.json({ _id, name, description, status })
   } catch (error) {
     next(error)
   }
 })
 
 
+
 // POST a new service
 router.post('/', async (req, res, next) => {
   try {
     const newService = await services.create(req.body);
+    // console.log(newService)
     res.json(newService);
   } catch (error) {
     next(error);
@@ -45,15 +48,34 @@ router.post('/', async (req, res, next) => {
 router.put('/:id', async (req, res, next) => {
   try {
     const updatedService = await services.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    console.log(updatedService);
     if (!updatedService) {
       const error = new Error(`Service with ID ${req.params.id} not found`);
       error.statusCode = 404;
       throw error;
     }
     res.json(updatedService);
+    // console.log(updatedService);
   } catch (error) {
     next(error);
   }
 });
+
+// DELETE a service by ID
+router.delete('/:id', async (req, res, next) => {
+  try {
+    const deletedService = await services.findByIdAndDelete(req.params.id);
+    if (!deletedService) {
+      const error = new Error(`Service with ID ${req.params.id} not found`);
+      error.statusCode = 404;
+      throw error;
+    }
+    res.json(deletedService);
+  } catch (error) {
+    next(error);
+  }
+});
+
+
 
 module.exports = router;

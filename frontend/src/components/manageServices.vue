@@ -54,25 +54,25 @@
 </template>
 
 <script>
-// Import store
-import { useMyStore } from '@/store/store.js'
-// Import ref from Vue
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
+import { onMounted } from 'vue'
+import axios from 'axios'
+
+const apiURL = import.meta.env.VITE_ROOT_API
+
+
 
 export default {
   // Component name
   name: 'ServicesTable',
   // Setup function
   setup() {
-
-    // Use store
-    const store = useMyStore()
-
     // Refs
     const serviceName = ref('')
     const serviceStatus = ref('')
     const serviceDescription = ref('')
     const editingService = ref(null)
+    const recentServices = ref([])
 
     // Methods
     // Add or update service
@@ -80,20 +80,28 @@ export default {
       // Check if editingService is null
       if (editingService.value) {
         // Update existing service
-        editingService.value.name = serviceName.value
-        editingService.value.status = serviceStatus.value
-        editingService.value.description = serviceDescription.value
-        editingService.value = null
+        const updatedService = recentServices.value.find(service => service._id === editingService.value._id)
+        updatedService.name = serviceName.value
+        updatedService.status = serviceStatus.value
+        updatedService.description = serviceDescription.value
+
+        axios.put(`${apiURL}/services/${updatedService._id}`, updatedService)
+          .then(() => {
+            fetchRecentServices()
+          })
+
       } else {
         // Add new service
         const newService = {
-          _id: store.recentServices.length + 1,
           name: serviceName.value,
           status: serviceStatus.value,
           description: serviceDescription.value,
         }
         // Push new service to recentServices array
-        store.recentServices.push(newService)
+        axios.post(`${apiURL}/services`, newService)
+          .then(() => {
+            fetchRecentServices()
+          })
       }
       // Reset form
       serviceName.value = ''
@@ -111,19 +119,29 @@ export default {
 
     // Delete service
     const deleteService = (service) => {
-      const index = store.recentServices.indexOf(service)
       // Remove service from recentServices array
-      store.recentServices.splice(index, 1)
+      axios.delete(`${apiURL}/services/${service._id}`)
+        .then(() => {
+          fetchRecentServices()
+        })
+    }
+
+    // Fetch recent services
+    const fetchRecentServices = () => {
+      axios.get(`${apiURL}/services`)
+        .then(res => {
+          recentServices.value = res.data
+        })
     }
 
     // Call fetchRecentServices action when component is mounted
     onMounted(() => {
-      store.fetchRecentServices()
+      fetchRecentServices()
     })
 
     // Return values
     return {
-      recentServices: store.recentServices,
+      recentServices,
       serviceName,
       serviceStatus,
       serviceDescription,
@@ -135,6 +153,7 @@ export default {
   },
 }
 </script>
+
 
 
 <style scoped>
