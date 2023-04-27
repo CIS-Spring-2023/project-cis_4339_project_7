@@ -64,24 +64,24 @@ export default {
           data: chartData,
           options
         })
-      } catch (errr) {
-        if (errr.response) {
+      } catch (err) {
+        if (err.response) {
           // client received an error response (5xx, 4xx)
           this.error = {
             title: 'Server Response',
-            message: errr.message
+            message: err.message
           }
-        } else if (errr.request) {
+        } else if (err.request) {
           // client never received a response, or request never left
           this.error = {
             title: 'Unable to Reach Server',
-            message: errr.message
+            message: err.message
           }
         } else {
           // There's probably an error in your code
           this.error = {
             title: 'Application Error',
-            message: errr.message
+            message: err.message
           }
         }
       }
