@@ -163,6 +163,7 @@ const serviceDataSchema = new Schema(
 const clients = mongoose.model('client', clientDataSchema)
 const orgs = mongoose.model('org', orgDataSchema)
 const events = mongoose.model('event', eventDataSchema)
+// New model for services
 const services = mongoose.model('service', serviceDataSchema)
 
 // package the models in an object to export

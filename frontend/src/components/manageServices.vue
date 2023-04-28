@@ -84,7 +84,7 @@ export default {
         updatedService.name = serviceName.value
         updatedService.status = serviceStatus.value
         updatedService.description = serviceDescription.value
-
+        // Update service in recentServices array
         axios.put(`${apiURL}/services/${updatedService._id}`, updatedService)
           .then(() => {
             fetchRecentServices()

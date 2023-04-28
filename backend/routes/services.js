@@ -1,3 +1,4 @@
+// Importing the required packages and modules
 const express = require('express');
 const router = express.Router();
 
@@ -9,7 +10,6 @@ router.get('/', async (req, res, next) => {
   try {
     const allServices = await services.find({});
     res.json(allServices);
-    // console.log(allServices);
   } catch (error) {
     next(error);
   }
@@ -37,7 +37,6 @@ router.get('/id/:id', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
   try {
     const newService = await services.create(req.body);
-    // console.log(newService)
     res.json(newService);
   } catch (error) {
     next(error);
@@ -48,14 +47,12 @@ router.post('/', async (req, res, next) => {
 router.put('/:id', async (req, res, next) => {
   try {
     const updatedService = await services.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    console.log(updatedService);
     if (!updatedService) {
       const error = new Error(`Service with ID ${req.params.id} not found`);
       error.statusCode = 404;
       throw error;
     }
     res.json(updatedService);
-    // console.log(updatedService);
   } catch (error) {
     next(error);
   }
@@ -77,5 +74,5 @@ router.delete('/:id', async (req, res, next) => {
 });
 
 
-
+// Exporting the router
 module.exports = router;

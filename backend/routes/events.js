@@ -103,7 +103,6 @@ router.post('/', (req, res, next) => {
 // PUT update event
 router.put('/update/:id', (req, res, next) => {
   events.findByIdAndUpdate(req.params.id, req.body, (error, data) => {
-    console.log(req.body)
     if (error) {
       return next(error)
     } else {
@@ -122,7 +121,6 @@ router.put('/update/:id/services', async (req, res, next) => {
       throw error
     }
     event.services = req.body
-    console.log(event.services)
     await event.save()
     res.sendStatus(200)
   } catch (error) {
