@@ -21,6 +21,17 @@ router.get('/', (req, res, next) => {
     .limit(10)
 })
 
+// GET attendance data
+router.get('/attendance', (req, res, next) => {
+  events.find({ org: org }, (error, data) => {
+    if (error) {
+      return next(error)
+    } else {
+      return res.json(data)
+    }
+  })
+})
+
 // GET single event by ID
 router.get('/id/:id', (req, res, next) => {
   // use findOne instead of find to not return array

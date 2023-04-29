@@ -149,4 +149,19 @@ router.delete('/:id', (req, res, next) => {
   })
 })
 
+router.get('/zipcode', (req, res, next) => {
+  clients
+    .aggregate([
+      { $match: { orgs: org } },
+      { $group: { _id: '$address.zip', count: { $sum: 1 } } }
+    ])
+    .exec((error, data) => {
+      if (error) {
+        return next(error)
+      } else {
+        res.json(data)
+      }
+    })
+})
+
 module.exports = router

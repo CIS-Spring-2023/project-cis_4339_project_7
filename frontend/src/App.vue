@@ -41,12 +41,12 @@ export default {
               </router-link>
             </li>
             <li v-if="visitor.isVisitorLoggedIn">
-              <a href="">
+              <a href="/">
                 <span @click="store.logout()"><button class="dash-login">Logout</button></span>
               </a>
             </li>
             <li v-if="editor.isEditorLoggedIn">
-              <a href="">
+              <a href="/">
                 <span @click="store.logout()"><button class="dash-login">Logout</button></span>
               </a>
             </li>
