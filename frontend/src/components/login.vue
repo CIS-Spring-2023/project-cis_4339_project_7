@@ -1,6 +1,9 @@
 <script>
-const apiURL = import.meta.env.VITE_ROOT_API
+//used ChatGPT for an idea on how to get the ball rolling
 import { useVisitor, useEditor } from "@/store/loggedInUser";
+import { getUserRole } from "@/store/loggedInUser";
+
+const apiURL = 'http://localhost:3000';
 
 export default {
   data: () => ({
@@ -8,22 +11,34 @@ export default {
     password: "",
   }),
   methods: {
-    onSubmit() {
-      if (this.username === "visitor" && this.password === "visitor") {
-        // Login as visitor
-        const visitor = useVisitor()
-        visitor.login(this.username, this.password)
-      } else if (this.username === "editor" && this.password === "editor") {
-        // Login as editor
-        const editor = useEditor()
-        editor.login(this.username, this.password)
-      } else {
+    async onSubmit() {
+      try {
+        //From the loggedInUser.js file
+        const response = await getUserRole(this.username, this.password);
+        if (response.user.role === "visitor") {
+          // Login as visitor
+          const visitor = useVisitor();
+          visitor.login(this.username, this.password, () => {
+            this.$router.push("/"); //Pushes user to dashboard when login
+          });
+        } else if (response.user.role === "editor") {
+          // Login as editor
+          const editor = useEditor();
+          editor.login(this.username, this.password, () => {
+            this.$router.push("/"); //Pushes user to dashboard when login
+          });
+        } else {
+          alert("Invalid Credentials.");
+        }
+      } catch (error) {
+        console.log(error);
         alert("Invalid Credentials.");
       }
-    }
-  }
+    },
+  },
 };
 </script>
+
 
 <template>
   <main class="login-background">
