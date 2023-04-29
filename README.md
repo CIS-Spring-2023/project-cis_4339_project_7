@@ -21,3 +21,6 @@ cd frontend
 Follow instructions in frontend README for setup and running as a local instance.
 
 
+## Postman API Documentation:
+
+https://documenter.getpostman.com/view/19763075/2s93eSZaiR
