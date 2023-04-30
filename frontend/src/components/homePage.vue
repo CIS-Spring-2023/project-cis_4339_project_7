@@ -137,6 +137,12 @@ export default {
           </div>
           <br />
           <div>
+            <h1
+              class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10"
+            >
+              Clients by Zip Code
+            </h1>
+            <br />
             <clientsZip
               v-if="!loading && !error"
               :label="labels"
